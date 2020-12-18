@@ -25,9 +25,46 @@ class PracticeBot(sea.SimulationRobot):
 
         sea.setSimulatedDrivetrain(self.drivetrain)
 
+    @staticmethod
+    def degreesPerSecond(turn):
+        """Takes a number representing the number of revolutions per second
+        you want the robot to turn, then returns that number converted to
+        a number for use in the PracticeBot.drive(...) method."""
+
+        return math.radians(turn) * (3.0/5.0)
+
     def autonomous(self):
-        # your code goes here:
-        pass
+        speed = 5
+        # turnModifier is -1 if the robot is turning left, 1 if the robot is turning right
+        turnModifier = 1
+        for _ in range(5):
+            # go forward long
+            self.drivetrain.drive(speed, math.pi/2, 0)
+            yield from sea.wait(100 / (speed / 4))
+
+            # turn
+            self.drivetrain.drive(0, math.pi/2, PracticeBot.degreesPerSecond(180 * turnModifier))
+            yield from sea.wait(25)
+
+            # go forward short
+            self.drivetrain.drive(speed, math.pi/2, 0)
+            yield from sea.wait(55 / (speed / 4))
+
+            # turn
+            self.drivetrain.drive(0, math.pi/2, PracticeBot.degreesPerSecond(180 * turnModifier))
+            yield from sea.wait(25)
+
+            # switch turn direction
+            turnModifier *= -1
+
+        # go forward long
+        self.drivetrain.drive(speed, math.pi/2, 0)
+        yield from sea.wait(100  / (speed / 4))
+
+        # stop moving
+        self.drivetrain.drive(0, math.pi/2, 0)
+        while 1:
+            yield
 
 if __name__ == "__main__":
     wpilib.run(PracticeBot)
